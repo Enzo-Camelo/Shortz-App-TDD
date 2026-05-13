@@ -33,4 +33,18 @@ describe("User Controller - Register", () => {
     expect(response.status).toBe(302);
     expect(response.header.location).toBe("/register");
   });
+
+  it("deve fazer login com sucesso e redirecionar para /feed", async () => {
+    // Mock do service
+    userService.login.mockResolvedValueOnce({
+      id: 1,
+      username: "testuser",
+    });
+    const response = await request(app).post("/login").send({
+      login: "testuser",
+      password: "12345678",
+    });
+    expect(response.status).toBe(302);
+    expect(response.header.location).toBe("/feed");
+  });
 });

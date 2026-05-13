@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import * as userService from '../user.service.js';
+import bcrypt from "bcryptjs";
 
 describe('User Service - Cadastro', () => {
   let mockUserModel;
@@ -54,4 +55,21 @@ describe('User Service - Cadastro', () => {
       .rejects
       .toThrow('Este e-mail ou usuário já está cadastrado.');
   });
+
+  it("deve fazer login com sucesso usando email ou username", async () => {
+    const mockUser = {
+      id: 1,
+      username: "paulo",
+      email: "paulo@test.com",
+      password: "$2b$10$6QMW3mEVTc6VIWdxM0j6weRb3FxOcQmpFzBJK.F2Js1ChjZ8sX3Dm", // b
+      fullName: "Paulo Teste",
+    };
+    mockUserModel.findOne.mockResolvedValueOnce(mockUser);
+    // Simular bcrypt.compare
+    vi.spyOn(bcrypt, "compare").mockResolvedValueOnce(true);
+    const result = await userService.login("paulo", "teste123", mockUserModel);
+    expect(result.id).toBe(1);
+    expect(result.username).toBe("paulo");
+  });
+
 });
