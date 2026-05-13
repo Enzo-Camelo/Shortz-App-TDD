@@ -5,6 +5,7 @@ import logger from 'morgan';
 import session from 'express-session';
 import flash from 'connect-flash';
 import expressLayouts from 'express-ejs-layouts';
+import userRoutes from "./modules/user/user.routes.js";
 
 const app = express();
 
@@ -20,10 +21,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(process.cwd(), 'src/public')));
-
 // Sessão + Flash
 app.use(session({
- secret: process.env.SESSION_SECRET,
+ secret: process.env.SESSION_SECRET || 'shortz_secret_key_123',
  resave: false,
  saveUninitialized: false,
  cookie: { maxAge: 1000 * 60 * 60 * 24 }
@@ -37,6 +37,7 @@ app.use((req, res, next) => {
 });
 
 // Rotas
+app.use("/", userRoutes);
 app.get('/', (req, res) => res.render('index', { title: 'Shortz-App-TDD' }));
 
 // 404
